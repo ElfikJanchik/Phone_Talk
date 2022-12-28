@@ -5,9 +5,6 @@
 #include "file_reader.h"
 #include "filter.h"
 #include "processing.h"
-#include "processing.cpp"
-
-
 
 void dateOutput(date date) {
     static const char* months[12] = { "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" };
@@ -48,14 +45,12 @@ int main()
 	std::cout << "Вариант №9. Телефонный разговор\n";
 	std::cout << "Автор: Арина Панизник\n\n";
 	std::cout << "Группа: 12\n";
+
 	phone_talk* talks[MAX_FILE_ROWS_COUNT];
 	int size;
-	
-
-		phone_talk* talks[MAX_FILE_ROWS_COUNT];
-		int size;
 		try
 		{
+			
 			read("data.txt", talks, size);
 			std::cout << "***** Телефонные разговоры *****\n\n";
 			for (int i = 0; i < size; i++)
@@ -63,6 +58,8 @@ int main()
 				output(talks[i]);
 			}
 			bool (*check_function)(phone_talk*) = NULL;
+			bool (*cmp_function)(phone_talk*, phone_talk*) = NULL;
+			void (*sort_function)(phone_talk * [], int, bool (*)(phone_talk*, phone_talk*)) = NULL;
 			std::cout << "1) Выберите способ фильтрации или отработкиданных:\n";
 			std::cout << "2) Вывести все телефонные разговоры на мобильные телефоны.\n";
 			std::cout << "3) Вывести все телефонные разговоры в ноябре 2022 года.\n";
@@ -84,6 +81,7 @@ int main()
 				throw " Некорректный номер пункта ";
 			}
 
+			//sort_function(talks, size, cmp_function);
 
 			if (check_function)
 			{
@@ -100,18 +98,16 @@ int main()
 				switch (sort)
 				{
 				case 1:
-					Heapsort(filtered, new_size);
+					Heapsort(talks, size, cmpByDuration);
 					break;
 				case 2:
-					Quicksort(filtered, new_size);
+					Quicksort(talks, size, cmpByDuration);
 					break;
 				case 3:
-					Heapsort(filtered, new_size);
-					//cost_sort(filtered, new_size);
+					Heapsort(talks, size, cmpByPhone);
 					break;
 				case 4:
-					Quicksort(filtered, new_size);
-					//cost_sort(filtered, new_size);
+					Quicksort(talks, size, cmpByPhone);
 					break;
 				default:
 					throw " Некорректный номер пункта ";

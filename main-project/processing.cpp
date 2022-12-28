@@ -10,23 +10,64 @@
 #include <iostream>
 
 using namespace std;
+
+bool cmpByDuration(phone_talk* a, phone_talk* b)
+{
+	if (a->duration.hour > b->duration.hour)
+	{
+		return true;
+	}
+	else if (a->duration.hour < b->duration.hour)
+	{
+		return false;
+	}
+	else if(a->duration.minute > b->duration.minute)
+	{
+		return true;
+	}
+	else if (a->duration.minute < b->duration.minute)
+	{
+		return false;
+	}
+	else
+	{
+		return a->duration.second > b->duration.second;
+	}
+}
+
+bool cmpByPhone(phone_talk* a, phone_talk* b)
+{
+	int n = strcmp(a->number, b->number);
+	if (n < 0)
+	{
+		return false;
+	}
+	else if (n > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return a->cost < b->cost;
+	}
+}
  
-void heapify(int arr[], int n, int i)
+void heapify(phone_talk* arr[], int n, int i, bool (*cmp)(phone_talk* a, phone_talk* b))
 {
 	int largest = i;
 	// Инициализируем наибольший элемент как корень
-	int l = 2 * i + 1; // левый = 2*i + 1
-	int r = 2 * i + 2; // правый = 2*i + 2
+	int left = 2 * i + 1; // левый = 2*i + 1
+	int right = 2 * i + 2; // правый = 2*i + 2
 
 	// Если левый дочерний элемент больше корня
-	if (l < n && arr[l] > arr[largest])
+	if (left < n && cmp(arr[left], arr[largest]))
 
-		largest = l;
+		largest = left;
 
 	// Если правый дочерний элемент больше, чем самый большой элемент на данный момент
-	if (r < n && arr[r] > arr[largest])
+	if (right < n && cmp(arr[right], arr[largest]))
 
-		largest = r;
+		largest = right;
 
 	// Если самый большой элемент не корень
 	if (largest != i)
@@ -34,15 +75,15 @@ void heapify(int arr[], int n, int i)
 
 		swap(arr[i], arr[largest]);
 		// Рекурсивно преобразуем в двоичную кучу затронутое поддерево
-		heapify(arr, n, largest);
+		heapify(arr, n, largest, cmp);
 	}
 }
 // Основная функция, выполняющая пирамидальную сортировку
-void Heapsort(int arr[], int n)
+void Heapsort(phone_talk* arr[], int n, bool (*cmp)(phone_talk* a, phone_talk* b))
 {
 	// Построение кучи (перегруппируем массив)
 	for (int i = n / 2 - 1; i >= 0; i--)
-		heapify(arr, n, i);
+		heapify(arr, n, i, cmp);
 
 	// Один за другим извлекаем элементы из кучи
 	for (int i = n - 1; i >= 0; i--)
@@ -51,8 +92,11 @@ void Heapsort(int arr[], int n)
 		swap(arr[0], arr[i]);
 
 		// вызываем процедуру heapify на уменьшенной куче
-		heapify(arr, i, 0);
+		heapify(arr, i, 0, cmp);
 	}
+}
+void Quicksort(phone_talk* array[], int size, bool(*cmp)(phone_talk* a, phone_talk* b))
+{
 }
 /* Вспомогательная функция для вывода на экран массива размера n*/
 void printArray(int arr[], int n)
@@ -62,44 +106,38 @@ void printArray(int arr[], int n)
 	cout << "\n";
 }
 
-void Quicksort(int* phone_talk, int first, int last)
+void Quicksort(phone_talk* arr[], int first, int last)
 {
-	int mid, count;
-	//Указатели в начало и в конец массива
+	phone_talk* mid;
+	phone_talk* count;
+	//Индексы начала и конца массива
 	int f = first, l = last;
 	//Центральный элемент массива
-	mid = phone_talk[(f + l) / 2];
+	mid = arr[(f + l) / 2];
 	//Делим массив
 	do 
 	{
 		//Пробегаем элементы, ищем те, которые нужно перекинуть в другую часть
 		//В левой части массива пропускаем(оставляем на месте) элементы, которые меньше центрального
-		while (phone_talk[f] < mid) f++;
+		while (mid > arr[f]) f++;
 		//В правой части пропускаем элементы, которые больше центрального
-		while (phone_talk[l] > mid) l--;
+		while (arr[l] > mid) l--;
 		//Меняем элементы местами
 		if (f <= l)
 		{
-			count = phone_talk[f];
-			phone_talk[f] = phone_talk[l];
-			phone_talk[l] = count;
+			count = arr[f];
+			arr[f] = arr[l];
+			arr[l] = count;
 			f++;
 			l--;
 		}
 	} while (f < l);
 	//Рекурсивные вызовы, если осталось, что сортировать
-	if (first < l) Quicksort(phone_talk, first, l);  //"Левый кусок"
-	if (f < last) Quicksort(phone_talk, f, last); //"Првый кусок"
+	if (first < l) Quicksort(arr, first, l);  //"Левый кусок"
+	if (f < last) Quicksort(arr, f, last); //"Првый кусок"
 }
 
-/*void cost_sort(phone_talk** report, int size)
+void Quicksort(phone_talk* arr[], int size)
 {
-	int i = 0;
-	int buf;
-	while (i < size)
-	{
-		int count = 0;
-		char* talks = report[i]-> ;
-		for (int i=0)
-	}
-}*/
+	Quicksort(arr, 0, size - 1);
+}

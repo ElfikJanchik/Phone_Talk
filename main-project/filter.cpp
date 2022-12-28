@@ -27,9 +27,6 @@ bool check_date(phone_talk* element)
 {
 	return element->date.month == 11 && element->date.year == 22;
 }
-bool check_rate(phone_talk* element)
-{
-	return element->cost == 14.8;
-}
+
 
 
